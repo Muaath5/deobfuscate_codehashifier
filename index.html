@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ Macro Deobfuscator</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        textarea {
+            width: 100%;
+            height: 500px;
+            padding: 10px;
+            font-family: monospace;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical;
+            font-size: 14px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .controls {
+            text-align: center;
+            margin: 10px 0;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .status {
+            text-align: center;
+            margin: 10px 0;
+            color: #666;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>C++ CodeHashifier Deobfuscator</h1>
+    
+    <div class="">
+            <label for="pretty">Pretty print</label>
+            <input type="checkbox" id="pretty" checked>
+        
+
+        
+        <label for="indent">Indent:</label>
+        <input type="number" min="2" max="8" step="2" value="4" id="indent">
+    </div>
+
+    <div class="container">
+        <div class="panel">
+            <label for="inputCode">Input Obfuscated Code:</label>
+            <textarea id="inputCode" placeholder="Paste your obfuscated code here..."></textarea>
+        </div>
+        <div class="panel">
+            <label for="outputCode">Deobfuscated Code:</label>
+            <textarea id="outputCode" readonly></textarea>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button id="deobfuscateBtn">Deobfuscate</button>
+        <button id="clearBtn">Clear All</button>
+        <button id="copyBtn">Copy Result</button>
+    </div>
+    
+    <div class="status" id="status"></div>
+    
+    <script src="script.js"></script>
+    <script>
+        // Options
+        const indentOption = document.getElementById('indent');
+        const prettyOption = document.getElementById('pretty');
+        
+        // I/O
+        const inputCode = document.getElementById('inputCode');
+        const outputCode = document.getElementById('outputCode');
+        const statusText = document.getElementById('status');
+
+        // Buttons
+        const clearBtn = document.getElementById('clearBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const deobfuscateBtn = document.getElementById('deobfuscateBtn');
+
+        // UI Event handlers
+        deobfuscateBtn.addEventListener('click', function() {
+            code = inputCode.value;
+            if (!code.trim()) {
+                statusText.textContent = 'Please enter some code first!';
+                return;
+            }
+            
+            try {
+                document.getElementById('status').textContent = 'Processing...';
+                setTimeout(() => {
+                    outputCode.value = deobfuscate(code);
+                    if (prettyOption.value == 'on')
+                        outputCode.value = prettyPrint(outputCode.value, indentOption.value);
+                    statusText.textContent = 'Deobfuscation complete!';
+                }, 10); // Small timeout to allow UI update
+            } catch (error) {
+                outputCode.value = `Error: ${error.message}`;
+                statusText.textContent = 'An error occurred during deobfuscation.';
+                console.error(error);
+            }
+        });
+
+        clearBtn.addEventListener('click', function() {
+            inputCode.value = '';
+            outputCode.value = '';
+            statusText.textContent = 'Cleared!';
+        });
+
+        copyBtn.addEventListener('click', function() {
+            outputCode.select();
+            document.execCommand('copy');
+            statusText.textContent = 'Copied to clipboard!';
+        });
+
+        // Load sample if needed
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (true || urlParams.has('sample')) {
+                fetch('sample.cpp')
+                .then(response => response.text())
+                .then(text => {
+                    inputCode.value = text;
+                })
+                .catch(error => {
+                    console.error('Error loading sample:', error);
+                });
+            }
+        };
+    </script>
+</body>
+</html>
